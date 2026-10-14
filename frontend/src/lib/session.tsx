@@ -11,9 +11,11 @@ import {
   type ReactNode,
 } from "react";
 import { type Address, formatEther } from "viem";
+import { toast } from "sonner";
 import { STUDIONET_CHAIN_ID, STUDIONET_RPC } from "./config";
 import { useGenlayerClient } from "./genlayer";
 import { discoverWallets, type DiscoveredWallet } from "./wallets";
+import { mapError } from "./errors";
 
 const STORAGE_KEY = "sociotrust-wallet-uuid";
 
@@ -29,6 +31,8 @@ interface Session {
   modalOpen: boolean;
   setModalOpen: (open: boolean) => void;
   refreshWallets: () => Promise<void>;
+  /** Smart connect: 1 wallet → straight to its popup; many → picker; none → install help. */
+  quickConnect: () => Promise<void>;
   connectWith: (uuid: string) => Promise<void>;
   switchNetwork: () => Promise<void>;
   disconnect: () => void;
@@ -151,8 +155,43 @@ export function SessionProvider({ children }: { children: ReactNode }) {
     [wallets, attachListeners, readChain]
   );
 
-  const switchNetwork = useCallback(async () => {
-    const p = activeProvider();
+  const quickConnect = useCallback(async () => {
+    // Fast path: exactly one wallet → skip our picker, go straight to its popup.
+    setConnecting(true);
+    try {
+      const list = await discoverWallets();
+      setWallets(list);
+      if (list.length === 1) {
+        const target = list[0];
+        try {
+          const accounts = (await target.provider.request({
+            method: "eth_requestAccounts",
+          })) as string[];
+          if (!accounts?.[0]) throw new Error("No accounts returned by wallet.");
+          providerRef.current = target.provider;
+          setWalletName(target.info.name);
+          setAddress(accounts[0] as Address);
+          try {
+            localStorage.setItem(STORAGE_KEY, target.info.uuid);
+          } catch {
+            /* private mode */
+          }
+          attachListeners(target.provider);
+          await readChain();
+        } catch (e) {
+          const f = mapError(e);
+          toast.error(f.title, { description: f.detail });
+        }
+        return;
+      }
+      // Zero or many wallets → let the user choose (or install) in the picker.
+      setModalOpen(true);
+    } finally {
+      setConnecting(false);
+    }
+  }, [attachListeners, readChain]);
+
+  const switchNetwork = useCallback(async () => {    const p = activeProvider();
     if (!p) throw new Error("No Ethereum wallet found (no active provider).");
     try {
       await p.request({
@@ -246,6 +285,7 @@ export function SessionProvider({ children }: { children: ReactNode }) {
       modalOpen,
       setModalOpen,
       refreshWallets,
+      quickConnect,
       connectWith,
       switchNetwork,
       disconnect,
@@ -261,6 +301,7 @@ export function SessionProvider({ children }: { children: ReactNode }) {
       discovering,
       modalOpen,
       refreshWallets,
+      quickConnect,
       connectWith,
       switchNetwork,
       disconnect,

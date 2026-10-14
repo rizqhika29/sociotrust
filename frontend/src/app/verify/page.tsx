@@ -68,7 +68,7 @@ function unreachableReason(url: string): string | null {
 
 export default function VerifyPage() {
   const client = useGenlayerClient();
-  const { address, connected, setModalOpen, chainOk, switchNetwork } = useSession();
+  const { address, connected, chainOk, switchNetwork, quickConnect } = useSession();
   const guard = useTxGuard();
 
   const [step, setStep] = useState<Step>(1);
@@ -293,7 +293,7 @@ export default function VerifyPage() {
                   gasless, so no funds are required.
                 </p>
                 <button
-                  onClick={() => setModalOpen(true)}
+                  onClick={() => quickConnect().catch(() => {})}
                   className="mt-4 inline-flex items-center gap-2 rounded-xl bg-pine px-5 py-2.5 text-sm font-bold text-paper hover:bg-pine-bright"
                 >
                   <Wallet size={16} /> Choose wallet

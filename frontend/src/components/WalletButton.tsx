@@ -14,13 +14,13 @@ export function WalletButton({ compact = false }: { compact?: boolean }) {
     walletName,
     switchNetwork,
     disconnect,
-    setModalOpen,
+    quickConnect,
   } = useSession();
 
   if (!connected) {
     return (
       <button
-        onClick={() => setModalOpen(true)}
+        onClick={() => quickConnect().catch(() => {})}
         disabled={connecting}
         className="inline-flex items-center gap-2 rounded-xl bg-pine px-4 py-2.5 text-sm font-bold text-paper shadow-seal transition hover:bg-pine-bright disabled:opacity-60"
       >

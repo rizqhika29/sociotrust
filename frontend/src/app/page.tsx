@@ -53,7 +53,7 @@ const STEPS = [
 
 export default function Home() {
   const client = useGenlayerClient();
-  const { connected, setModalOpen } = useSession();
+  const { connected, quickConnect } = useSession();
   const [count, setCount] = useState<number | null>(null);
   const [latest, setLatest] = useState<{ address: string; identity: IdentityRecord }[]>([]);
   const [statsError, setStatsError] = useState<FriendlyError | null>(null);
@@ -115,7 +115,7 @@ export default function Home() {
                 </Link>
                 {!connected ? (
                   <button
-                    onClick={() => setModalOpen(true)}
+                    onClick={() => quickConnect().catch(() => {})}
                     className="inline-flex items-center gap-2 rounded-xl border border-paper/25 px-6 py-3.5 text-sm font-bold text-paper transition hover:bg-paper/10"
                   >
                     <Wallet size={16} /> Connect wallet
