@@ -73,7 +73,7 @@ export default function VerifyPage() {
 
   const [step, setStep] = useState<Step>(1);
   const [challenge, setChallenge] = useState("");
-  const [platform, setPlatform] = useState<string>("gist");
+  const [platform, setPlatform] = useState<string>("github");
   const [username, setUsername] = useState("");
   const [proofUrl, setProofUrl] = useState("");
   const [hash, setHash] = useState<TxHash | null>(null);
@@ -350,9 +350,16 @@ export default function VerifyPage() {
           <section className={`rounded-2xl border p-6 shadow-card ${challenge ? "border-ink/10 bg-paper-card" : "border-ink/10 bg-paper-deep opacity-60"}`}>
             <h2 className="font-display text-xl font-bold text-ink">3 · Publish & point to proof</h2>
             <p className="mt-1 text-sm text-ink-mute">
-              Post the exact challenge text publicly, then paste the URL below. Validators will
-              fetch this page themselves.
+              Create a <strong>public gist under your own GitHub account</strong> containing the
+              exact challenge. Validators check <em>GitHub&apos;s API</em> — not your URL text —
+              so only the account holder can pass.
             </p>
+            <ol className="mt-3 space-y-1.5 rounded-xl bg-paper-deep p-4 text-xs leading-relaxed text-ink-soft">
+              <li><span className="font-bold text-ink">1.</span> Open <span className="font-mono font-semibold">gist.github.com</span> logged in as your account.</li>
+              <li><span className="font-bold text-ink">2.</span> Paste the challenge above into the gist body.</li>
+              <li><span className="font-bold text-ink">3.</span> Click <span className="font-semibold">Create public gist</span> (secret gists also work if the API can see them — public is safest).</li>
+              <li><span className="font-bold text-ink">4.</span> Copy the gist URL and paste it below with your GitHub username.</li>
+            </ol>
             <div className="mt-4 grid gap-4">
               <label className="block">
                 <span className="mb-1.5 block text-xs font-bold uppercase tracking-wider text-ink-soft">Platform</span>
@@ -371,12 +378,12 @@ export default function VerifyPage() {
               </label>
               <label className="block">
                 <span className="mb-1.5 block text-xs font-bold uppercase tracking-wider text-ink-soft">
-                  Username / handle <span className="font-mono text-ink-mute">({username.trim().length}/{USERNAME_MAX})</span>
+                  GitHub username <span className="font-mono text-ink-mute">({username.trim().length}/{USERNAME_MAX})</span>
                 </span>
                 <input
                   value={username}
                   onChange={(e) => setUsername(e.target.value)}
-                  placeholder="e.g. satoshi"
+                  placeholder="e.g. octocat"
                   maxLength={USERNAME_MAX + 16}
                   className="w-full rounded-xl border border-ink/15 bg-paper px-3 py-2.5 font-mono text-sm text-ink placeholder:text-ink/30"
                 />
@@ -385,11 +392,11 @@ export default function VerifyPage() {
                 )}
               </label>
               <label className="block">
-                <span className="mb-1.5 block text-xs font-bold uppercase tracking-wider text-ink-soft">Public proof URL</span>
+                <span className="mb-1.5 block text-xs font-bold uppercase tracking-wider text-ink-soft">Gist URL</span>
                 <input
                   value={proofUrl}
                   onChange={(e) => setProofUrl(e.target.value)}
-                  placeholder="https://gist.github.com/you/…"
+                  placeholder="https://gist.github.com/octocat/…"
                   inputMode="url"
                   className="w-full rounded-xl border border-ink/15 bg-paper px-3 py-2.5 font-mono text-sm text-ink placeholder:text-ink/30"
                 />

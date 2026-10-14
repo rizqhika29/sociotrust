@@ -41,13 +41,13 @@ const STEPS = [
     n: "03",
     icon: AtSign,
     title: "Publish your proof",
-    body: "Post the exact challenge on your social profile — a gist, a post, a page you control.",
+    body: "Create a public gist under your own GitHub account containing the challenge — only the account holder can do that.",
   },
   {
     n: "04",
     icon: Vote,
     title: "Validators adjudicate",
-    body: "Five independent AI validators fetch your proof and must agree before the seal is stamped on-chain.",
+    body: "Five independent AI validators check GitHub's API ownership record and must agree before the seal is stamped — one identity, one wallet.",
   },
 ];
 
@@ -102,9 +102,9 @@ export default function Home() {
                 <span className="block text-brass-bright">On-chain.</span>
               </h1>
               <p className="mt-5 max-w-xl text-base leading-relaxed text-paper/70 sm:text-lg">
-                SocioTrust links your social profiles to your wallet. Post a challenge,
-                let five independent AI validators inspect the proof, and carry a
-                tamper-evident seal of trust across the ecosystem.
+                SocioTrust links your GitHub identity to your wallet. Publish a challenge in a
+                gist under your own account, let five independent AI validators confirm GitHub&apos;s
+                own ownership record, and carry a tamper-evident seal across the ecosystem.
               </p>
               <div className="mt-8 flex flex-wrap gap-3">
                 <Link
@@ -170,7 +170,7 @@ export default function Home() {
       <section className="border-b border-ink/10 bg-paper-deep">
         <div className="mx-auto flex max-w-6xl flex-wrap items-center gap-x-8 gap-y-3 px-4 py-5 sm:px-6">
           <span className="text-[11px] font-bold uppercase tracking-[0.25em] text-ink-mute">
-            Proof sources
+            Authoritative proof source
           </span>
           {SUPPORTED_PLATFORMS.map((p) => (
             <span key={p.id} className="inline-flex items-center gap-1.5 text-sm font-bold text-ink-soft">
@@ -186,7 +186,7 @@ export default function Home() {
           <SectionHeading
             eyebrow="Protocol in four stamps"
             title="From wallet to sealed identity"
-            lede="No screenshots, no manual review, no trusted oracle. Just you, your public post, and a jury of models."
+            lede="No screenshots, no manual review, no trusted oracle. Just you, your GitHub account, and a jury of models."
           />
           <ol className="mt-10 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
             {STEPS.map((s) => (
@@ -280,8 +280,8 @@ export default function Home() {
             {[
               {
                 icon: FileCheck2,
-                t: "Reads the live web",
-                b: "Validators independently fetch your proof URL. No oracle feeds to bribe, no API keys to leak.",
+                t: "Checks the authoritative record",
+                b: "Validators query GitHub's own API for the gist owner — a field only the account holder can publish under. Arbitrary pages can't impersonate handles.",
               },
               {
                 icon: Vote,
@@ -313,7 +313,7 @@ export default function Home() {
               items={[
                 {
                   q: "What does verification actually prove?",
-                  a: "That whoever controls a wallet also controls a public social page — they published a unique challenge there, witnessed by five independent validators. It does not prove legal identity or that an account can't change hands later.",
+                  a: "That whoever controls a wallet also controls a GitHub account — they published a unique challenge in a gist, and GitHub's own API confirms that account owns the gist. Each GitHub identity can seal exactly one wallet, so one person can't mint unlimited identities. It does not prove legal identity or immunity to account sales later.",
                 },
                 {
                   q: "How long does it take?",

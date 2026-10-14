@@ -30,12 +30,12 @@ export default function HowItWorksPage() {
             {
               icon: Globe2,
               t: "2 · The public proof",
-              b: "You publish that exact phrase on a page you control — a gist, a post, a profile. Nothing secret: the whole point is that anyone, including five strangers' AI models, can go read it.",
+              b: "You create a public gist under your own GitHub account containing that phrase. Nothing secret: the whole point is that anyone — including five strangers' AI models — can verify it against GitHub's own records.",
             },
             {
               icon: Scale,
               t: "3 · Optimistic Democracy",
-              b: "You call verify_identity(). One randomly selected leader fetches your page and asks its model: does the username match? Is the challenge present? Four validators independently repeat the whole task and compare only the decision fields — never raw HTML, which legitimately differs between fetches (caches, counters, timestamps). Over half must agree.",
+              b: "You call verify_identity(). One randomly selected leader fetches the canonical GitHub API record for your gist and checks two facts: does owner.login equal your username, and is the challenge in the files? Four validators independently repeat the check and compare only those decision booleans. Over half must agree — and a GitHub identity can seal exactly one wallet, enforced on-chain.",
             },
             {
               icon: Gavel,
@@ -71,10 +71,12 @@ export default function HowItWorksPage() {
               <tbody className="divide-y divide-ink/5">
                 {[
                   ["[EXPECTED] No challenge", "Verify was called before any challenge was issued."],
-                  ["[EXPECTED] challenge not found", "Validators agree the phrase is absent from the page."],
-                  ["[EXPECTED] username not found", "The handle does not appear on the proof page."],
-                  ["[EXTERNAL] proof_url 4xx", "The page is private, moved, or mistyped."],
-                  ["[TRANSIENT] fetch failed", "A validator hit a timeout — retry, nothing was stored."],
+                  ["[EXPECTED] owner mismatch", "The gist's GitHub owner differs from the claimed username — proof must live under your own account."],
+                  ["[EXPECTED] anonymous gist", "Gists without a GitHub owner prove nothing. Create the gist while logged in."],
+                  ["[EXPECTED] already sealed", "That GitHub identity already belongs to another wallet. One identity, one wallet."],
+                  ["[EXPECTED] challenge not in gist", "Validators agree the phrase is absent from the gist files."],
+                  ["[EXTERNAL] gist not found", "The gist id does not exist on GitHub. Check the URL."],
+                  ["[TRANSIENT] rate limited", "GitHub's API throttled validators — retry, nothing was stored."],
                   ["Undetermined", "The jury deadlocked after appeals. Retry with a fresh set."],
                 ].map(([code, meaning]) => (
                   <tr key={code}>
@@ -103,9 +105,9 @@ export default function HowItWorksPage() {
             <TriangleAlert size={20} /> Honest limits
           </h2>
           <ul className="mt-2 list-disc space-y-1.5 pl-5 text-sm leading-relaxed text-ink-soft">
-            <li>A seal proves control of a page at seal time — not legal identity, and not immunity to account sales or hacks later.</li>
-            <li>Platforms that require login (private posts, DMs) cannot be verified; proofs must be public.</li>
-            <li>Deleted proofs leave a stale seal behind — re-verify after major profile changes, and check the live proof URL before trusting a seal.</li>
+            <li>A seal proves control of a GitHub account at seal time — not legal identity, and not immunity to account sales or hacks later.</li>
+            <li>Only GitHub gists are accepted today, deliberately: ownership must come from an authoritative platform record, not an arbitrary page.</li>
+            <li>Deleted gists leave a stale seal behind — re-verify after major profile changes, and check the live gist before trusting a seal.</li>
           </ul>
         </div>
 
@@ -128,11 +130,11 @@ export default function HowItWorksPage() {
             items={[
               {
                 q: "Why not just check the page in normal JavaScript?",
-                a: "Anyone can fake a frontend check. Here the check itself runs under consensus: five independent parties fetch and judge, and disagreement is visible on-chain. That is what makes the seal worth trusting.",
+                a: "Anyone can fake a frontend check, and any page can claim any handle. Here the check runs under consensus against GitHub's authoritative API: five independent parties confirm the platform's own ownership record, and disagreement is visible on-chain. That is what makes the seal worth trusting.",
               },
               {
-                q: "Why compare only decision fields, not the whole page?",
-                a: "Live pages differ between fetches — caches, counters, timestamps. Validators extract a verdict (username match? message found?) and agree on that, which is stable while the raw bytes are not.",
+                q: "Why compare only decision fields, not the whole API response?",
+                a: "API responses carry volatile metadata (timestamps, counters) that legitimately differs between fetches. Validators extract a verdict — owner match? message found? — and agree on that, which is stable while the raw bytes are not.",
               },
               {
                 q: "Who can revoke my seal?",

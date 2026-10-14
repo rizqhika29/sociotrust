@@ -97,13 +97,19 @@ export function mapError(err: unknown): FriendlyError {
           detail,
           hint: detail.includes("No challenge")
             ? "Request a challenge first (step 2), then verify."
-            : detail.includes("challenge message not found")
-              ? "Make sure the exact challenge text is published at your proof URL, then retry."
-              : detail.includes("username not found")
-                ? "Make sure the username appears on the proof page."
-                : detail.includes("Unsupported platform")
-                  ? "Pick one of the supported platforms: github, gist, x, twitter, blog."
-                  : "Fix the highlighted issue and try again.",
+            : detail.includes("already sealed")
+              ? "This GitHub identity already belongs to another wallet. Each identity seals exactly one wallet."
+              : detail.includes("does not match")
+                ? "The gist's GitHub owner differs from your username — the gist must be under your own account."
+                : detail.includes("anonymous gist")
+                  ? "Gists without a GitHub owner cannot prove account ownership. Create the gist while logged in."
+                  : detail.includes("challenge message not found") || detail.includes("not found in gist")
+                    ? "Make sure the exact challenge text is inside the gist files, then retry."
+                    : detail.includes("Only 'github'")
+                      ? "Only GitHub gists are supported — ownership is verified against GitHub's API."
+                      : detail.includes("username")
+                        ? "Check the GitHub username format and try again."
+                        : "Fix the highlighted issue and try again.",
           retryable: true,
         };
       case "EXTERNAL":

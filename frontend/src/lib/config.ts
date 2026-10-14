@@ -1,7 +1,7 @@
 import type { Address } from "viem";
 
 export const CONTRACT_ADDRESS = (process.env.NEXT_PUBLIC_CONTRACT_ADDRESS ??
-  "0x71612446a1f9834Af9c495D12FC495EbD10FAC92") as Address;
+  "0x9aE81BD3083A8D8CE24b256c02652B84fB8f5121") as Address;
 
 export const EXPLORER_BASE =
   process.env.NEXT_PUBLIC_EXPLORER ?? "https://explorer-studio.genlayer.com";
@@ -18,11 +18,11 @@ export const shortAddress = (addr: string) =>
   addr.length > 12 ? `${addr.slice(0, 6)}…${addr.slice(-4)}` : addr;
 
 export const SUPPORTED_PLATFORMS = [
-  { id: "github", label: "GitHub", hint: "Public gist or profile page containing your challenge" },
-  { id: "gist", label: "Gist / Paste", hint: "Any public raw-text URL, e.g. gist, paste.rs" },
-  { id: "x", label: "X (Twitter)", hint: "A public post containing your challenge" },
-  { id: "twitter", label: "Twitter", hint: "Same as X — kept for compatibility" },
-  { id: "blog", label: "Blog / Site", hint: "Any public page you control" },
+  {
+    id: "github",
+    label: "GitHub Gist",
+    hint: "A public gist under YOUR GitHub account — ownership is checked against the GitHub API",
+  },
 ] as const;
 
 export type PlatformId = (typeof SUPPORTED_PLATFORMS)[number]["id"];
@@ -32,6 +32,7 @@ export interface IdentityRecord {
   platform: string;
   username: string;
   proof_url: string;
+  gist_id: string;
   verified_at: string;
   note: string;
 }

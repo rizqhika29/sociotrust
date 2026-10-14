@@ -46,10 +46,26 @@ export function IdentityCard({
               rel="noreferrer"
               className="inline-flex items-center gap-1 text-xs font-bold text-pine-bright hover:underline"
             >
-              <Link2 size={13} /> Open proof
+              <Link2 size={13} /> Open gist
             </a>
           </dd>
         </div>
+        {identity.gist_id && (
+          <div className="flex items-center justify-between gap-2">
+            <dt className="text-ink-mute">API record</dt>
+            <dd>
+              <a
+                href={`https://api.github.com/gists/${identity.gist_id}`}
+                target="_blank"
+                rel="noreferrer"
+                className="font-mono text-xs font-semibold text-pine-bright hover:underline"
+                title="Canonical GitHub API record for this gist"
+              >
+                {identity.gist_id.slice(0, 8)}…
+              </a>
+            </dd>
+          </div>
+        )}
       </dl>
       <Link
         href={`/lookup?address=${address}`}

@@ -63,13 +63,28 @@ export async function readIdentity(
     platform: String(res.platform ?? ""),
     username: String(res.username ?? ""),
     proof_url: String(res.proof_url ?? ""),
+    gist_id: String(res.gist_id ?? ""),
     verified_at: String(res.verified_at ?? ""),
     note: String(res.note ?? ""),
   };
 }
 
-export async function readVerifiedList(client: GenlayerClient): Promise<string[]> {
-  const res = (await resilientRead("list_verified", () =>
+export async function readOwnerOf(
+  client: GenlayerClient,
+  platform: string,
+  username: string
+): Promise<string> {
+  const res = await resilientRead("owner_of", () =>
+    client.readContract({
+      address: CONTRACT_ADDRESS,
+      functionName: "owner_of",
+      args: [platform, username],
+    })
+  );
+  return String(res ?? "");
+}
+
+export async function readVerifiedList(client: GenlayerClient): Promise<string[]> {  const res = (await resilientRead("list_verified", () =>
     client.readContract({
       address: CONTRACT_ADDRESS,
       functionName: "list_verified",

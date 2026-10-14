@@ -1,7 +1,12 @@
-"""Integration tests for SocioTrustIdentity — full consensus, real web/LLM.
+"""Integration tests for SocioTrustIdentity v2 — full consensus, real web calls.
 
 Run: gltest tests/integration/ -v -s --network studionet
 Note: studionet is gasless + rate-limited (60 req/min). Keep suite small.
+
+Positive-path live verification requires a real GitHub gist owned by the
+tester containing a FRESH challenge, so it is exercised manually (see README)
+and via direct-mode mocks. These tests validate deploy, deterministic
+rejections, and live consensus on the GitHub-API error paths.
 """
 
 from gltest import get_contract_factory, get_default_account
@@ -24,32 +29,40 @@ def test_deploy_and_request_challenge():
     assert "SocioTrust verification" in challenge
 
 
-def test_unsupported_platform_rejects():
+def test_non_github_platform_rejects():
     factory = _factory()
     contract = factory.deploy(args=[])
     assert tx_execution_succeeded(contract.request_challenge().transact())
 
     tx = contract.verify_identity(
-        args=["facebook", "someone", "https://example.com/proof"]
+        args=["blog", "someone", "https://example.com/proof"]
     ).transact()
-    assert tx_execution_failed(tx), "expected revert for unsupported platform"
+    assert tx_execution_failed(tx), "expected revert: only github is supported"
 
 
-def test_verify_rejects_proof_without_challenge():
-    """Real web+LLM consensus on the rejection path.
-
-    Uses a stable public page that cannot contain our fresh challenge,
-    so leader + validators must agree to reject. Proves the equivalence
-    rule works end-to-end on live data.
-    """
+def test_non_gist_url_rejects():
     factory = _factory()
     contract = factory.deploy(args=[])
     assert tx_execution_succeeded(contract.request_challenge().transact())
 
     tx = contract.verify_identity(
-        args=["github", "genlayerlabs", "https://github.com/genlayerlabs"]
+        args=["github", "octocat", "https://paste.rs/abc123"]
     ).transact()
-    assert tx_execution_failed(tx), "expected reject: challenge not on page"
+    assert tx_execution_failed(tx), "expected revert: not a gist URL"
+
+
+def test_missing_gist_rejects_live():
+    """Live consensus on the GitHub API 404 path (all-zeros gist id)."""
+    factory = _factory()
+    contract = factory.deploy(args=[])
+    assert tx_execution_succeeded(contract.request_challenge().transact())
+
+    fake_id = "0" * 32
+    tx = contract.verify_identity(
+        args=["github", "octocat", f"https://gist.github.com/octocat/{fake_id}"]
+    ).transact()
+    assert tx_execution_failed(tx), "expected reject: gist does not exist"
 
     acct = get_default_account()
     assert contract.is_verified(args=[acct.address]).call() is False
+    assert contract.owner_of(args=["github", "octocat"]).call() == ""
