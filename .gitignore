@@ -19,6 +19,7 @@ artifacts/
 *.key
 *keystore*.json
 *.pass
+*-pass
 
 # vercel / logs
 .vercel/
