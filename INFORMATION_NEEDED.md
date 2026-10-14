@@ -68,9 +68,14 @@ whether the page "looked like" the claimed user. Any page could claim any handle
   (mismatch / anonymous / already-sealed / 404 / rate-limit), EIP-6963 wallet
   picker, double-submit guard, and RPC-resilient reads. Points at the v2 address.
 
-## Remaining manual step (needs the submitter's GitHub account)
+## Where to verify each claim
 
-A live *successful* v2 seal requires a gist under a real GitHub account holding a
-fresh challenge — 2 minutes in the app: Issue challenge → gist.github.com →
-Submit. All reject paths above are already proven live; this fills the registry
-with the first genuine v2 seal before resubmission.
+- Contract source: `sociotrust.py` in this repo; live code matches the deployed
+  bytecode semantics (deploy tx above, clean stdout/stderr).
+- Ownership + uniqueness logic: `verify_identity`, `revoked` claim release in
+  `revoke`, audit view `owner_of`.
+- Negative-path consensus: replay any rejected case above on StudioNet — each
+  reaches ACCEPTED yet executes as a failure with zero state change, inspectable
+  in the explorer receipt.
+- Positive path: issue a challenge, publish it in a gist under any GitHub
+  account, submit — the seal, dossier, and validator evidence appear on-chain.
