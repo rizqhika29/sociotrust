@@ -1,0 +1,9 @@
+# deps
+node_modules/
+.next/
+out/
+
+# env
+.env
+.env.local
+*.pem

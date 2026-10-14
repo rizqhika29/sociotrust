@@ -1,0 +1,38 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+body {
+  text-rendering: optimizeLegibility;
+}
+
+/* Subtle registry-ledger dot texture for dark panels */
+.dot-grid {
+  background-image: radial-gradient(rgba(246, 241, 230, 0.09) 1px, transparent 1px);
+  background-size: 22px 22px;
+}
+
+/* Subtle ledger lines for light panels */
+.ledger-lines {
+  background-image: repeating-linear-gradient(
+    to bottom,
+    transparent 0,
+    transparent 31px,
+    rgba(16, 29, 23, 0.05) 31px,
+    rgba(16, 29, 23, 0.05) 32px
+  );
+}
+
+/* Double-rule divider, registry style */
+.rule-double {
+  border-top: 1px solid rgba(16, 29, 23, 0.2);
+  position: relative;
+}
+.rule-double::after {
+  content: "";
+  position: absolute;
+  top: 3px;
+  left: 0;
+  right: 0;
+  border-top: 1px solid rgba(16, 29, 23, 0.2);
+}

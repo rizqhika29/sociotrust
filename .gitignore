@@ -1,0 +1,30 @@
+# deps & build
+node_modules/
+.next/
+out/
+dist/
+
+# python / tests
+__pycache__/
+.pytest_cache/
+.gltest_cache/
+artifacts/
+*.pyc
+
+# env & secrets (keep *.example)
+.env
+.env.local
+.env.*.local
+*.pem
+*.key
+*keystore*.json
+*.pass
+
+# vercel / logs
+.vercel/
+*.log
+*.tsbuildinfo
+
+# OS
+.DS_Store
+Thumbs.db
